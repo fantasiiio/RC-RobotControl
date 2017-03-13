@@ -1,0 +1,18 @@
+C:\Users\Francois\documents\visual studio 2010\Projects\RobotControl\RobotControl\obj\x86\Debug\RobotControl.Form1.resources
+C:\Users\Francois\documents\visual studio 2010\Projects\RobotControl\RobotControl\obj\x86\Debug\RobotControl.Properties.Resources.resources
+C:\Users\Francois\documents\visual studio 2010\Projects\RobotControl\RobotControl\obj\x86\Debug\RobotControl.csproj.GenerateResource.Cache
+C:\Users\Francois\documents\visual studio 2010\Projects\RobotControl\RobotControl\bin\Debug\RobotControl.exe
+C:\Users\Francois\documents\visual studio 2010\Projects\RobotControl\RobotControl\bin\Debug\RobotControl.pdb
+C:\Users\Francois\documents\visual studio 2010\Projects\RobotControl\RobotControl\obj\x86\Debug\RobotControl.exe
+C:\Users\Francois\documents\visual studio 2010\Projects\RobotControl\RobotControl\obj\x86\Debug\RobotControl.pdb
+F:\dev\RobotControl\RobotControl\obj\x86\Debug\RobotControl.exe
+F:\dev\RobotControl\RobotControl\obj\x86\Debug\RobotControl.pdb
+F:\dev\RobotControl\RobotControl\obj\x86\Debug\RobotControl.Properties.Resources.resources
+F:\dev\RobotControl\RobotControl\obj\x86\Debug\RobotControl.ucConnect.resources
+F:\dev\RobotControl\RobotControl\obj\x86\Debug\RobotControl.ucSubtrim.resources
+F:\dev\RobotControl\RobotControl\obj\x86\Debug\RobotControl.csproj.GenerateResource.Cache
+F:\dev\RobotControl\RobotControl\bin\Debug\RobotControl.exe
+F:\dev\RobotControl\RobotControl\bin\Debug\RobotControl.pdb
+F:\dev\RobotControl\RobotControl\obj\x86\Debug\RobotControl.ucServoControl.resources
+F:\dev\RobotControl\RobotControl\obj\x86\Debug\RobotControl.csprojResolveAssemblyReference.cache
+F:\dev\RobotControl\RobotControl\obj\x86\Debug\RobotControl.Form1.resources
