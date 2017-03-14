@@ -32,3 +32,4 @@ public:
 	void parseHelp(CommandArgs cmdArgs);
 	void printCommandList();
 };
+

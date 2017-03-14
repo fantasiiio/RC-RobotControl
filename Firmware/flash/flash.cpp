@@ -43,7 +43,7 @@ const uint32_t FLASH_CHANNEL_MAPPING_ADDR = FLASH_UPLOAD_ADDR - (FLASH_PAGE_SIZE
 //#define AHBPERIPH_BASE        (PERIPH_BASE + 0x20000)
 #define FLASH_R_BASE          (AHBPERIPH_BASE + 0x2000) /*!< Flash registers base address */
 
-#define FLASH_KEY1               ((uint32_t)0x45670123)
+//#define FLASH_KEY1               ((uint32_t)0x45670123)
 #define FLASH_KEY2               ((uint32_t)0xCDEF89AB)
 
 //#define FLASH_FLAG_BSY                 ((uint32_t)0x00000001)  /*!< FLASH Busy flag */

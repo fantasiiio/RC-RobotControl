@@ -68,3 +68,4 @@ void PCA9685::setPWM(uint8_t num, uint16_t on, uint16_t off)
     cmd[4] = off >> 8;
     i2c.write(_i2caddr, cmd, 5);
 }
+
