@@ -20,7 +20,7 @@ namespace RobotControl
         public ucSubtrim(int channelNumber)
         {
             InitializeComponent();
-            chNumber = channelNumber-1;
+            chNumber = channelNumber;
         }
 
         void SendTrim(int amount)

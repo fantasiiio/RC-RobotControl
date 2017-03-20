@@ -48,6 +48,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ChannelMappingData.cs" />
+    <Compile Include="ChMapTypeChangedEventArgs.cs" />
+    <Compile Include="ComboboxItem.cs" />
     <Compile Include="CommandEventArgs.cs" />
     <Compile Include="Communication\COMPortInfo.cs" />
     <Compile Include="Communication\DataEventArgs.cs" />
@@ -56,12 +59,14 @@
     <Compile Include="Communication\SerialDevice.cs" />
     <Compile Include="Communication\SerialService.cs" />
     <Compile Include="Communication\ServiceBase.cs" />
+    <Compile Include="Enums.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
+    <Compile Include="IucMapping.cs" />
     <Compile Include="KeyValue.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -70,6 +75,37 @@
     </Compile>
     <Compile Include="ucConnect.Designer.cs">
       <DependentUpon>ucConnect.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UcMappingComparer.cs" />
+    <Compile Include="ucMappingDirect.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ucMappingDirect.Designer.cs">
+      <DependentUpon>ucMappingDirect.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ucMappingIK.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ucMappingIK.Designer.cs">
+      <DependentUpon>ucMappingIK.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ucMappingBase.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ucMappingBase.Designer.cs">
+      <DependentUpon>ucMappingBase.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ucMappingTankMix.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ucMappingTankMix.Designer.cs">
+      <DependentUpon>ucMappingTankMix.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ucReverse.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ucReverse.Designer.cs">
+      <DependentUpon>ucReverse.cs</DependentUpon>
     </Compile>
     <Compile Include="ucServoControl.cs">
       <SubType>UserControl</SubType>
@@ -98,6 +134,21 @@
     </Compile>
     <EmbeddedResource Include="ucConnect.resx">
       <DependentUpon>ucConnect.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ucMappingBase.resx">
+      <DependentUpon>ucMappingBase.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ucMappingDirect.resx">
+      <DependentUpon>ucMappingDirect.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ucMappingIK.resx">
+      <DependentUpon>ucMappingIK.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ucMappingTankMix.resx">
+      <DependentUpon>ucMappingTankMix.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ucReverse.resx">
+      <DependentUpon>ucReverse.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ucServoControl.resx">
       <DependentUpon>ucServoControl.cs</DependentUpon>

@@ -11,6 +11,7 @@ using WindowsManager;
 using System.IO;
 using System.Runtime.Serialization.Json;
 using System.Threading;
+using System.Globalization;
 
 namespace RobotControl
 {
@@ -25,6 +26,14 @@ namespace RobotControl
         List<ucServoControl> ucServoAngleList;
         List<ucServoControl> ucServoPWMList;
         List<ucServoControl> ucInputList;
+        List<ucReverse> ucReverseList;
+        bool BuildingChannelMap = false;
+        int chMapIndex;
+        bool CreatingChMap = false;
+        bool updating = false;
+        int buildHeight;
+        bool buildingReverse = false;
+        bool waitPositiveAnswer = false;
 
         public Form1()
         {
@@ -84,6 +93,8 @@ namespace RobotControl
         void timeOutTimer_Tick(object sender, EventArgs e)
         {
             logMessage("Timeout: No answer.");
+            if (tabControl1.SelectedTab != tabConnect)
+                MessageBox.Show("Warning", "No answer");
             //serial.Disconnect();
             timeOutTimer.Stop();
         }
@@ -156,25 +167,195 @@ namespace RobotControl
             UpdateServoControlValues((int)index, ppm, angle);
         }
 
+
+        public T GetValue<T>(string str)
+        {
+            try
+            {
+                var converter = TypeDescriptor.GetConverter(typeof(T));
+                if (converter != null)
+                {
+                    return (T)converter.ConvertFromString(null, CultureInfo.InvariantCulture, str);
+                }
+                return default(T);
+            }
+            catch (NotSupportedException)
+            {
+                return default(T);
+            }
+        }
+
+        T[] GetValueArrayFromString<T>(string str)
+        {
+            string[] strArr = str.Split(',');
+            T[] intArr = new T[strArr.Length];
+            for (int i = 0; i < strArr.Length; i++)
+            {
+                intArr[i] = GetValue<T>(strArr[i]);
+            }
+            return intArr;
+        }
+
+        void AddControlToContainer(Control container, Control ctrl)
+        {
+            if (container.InvokeRequired)
+                container.Invoke((MethodInvoker)delegate { AddControlToContainer(container, ctrl); });
+            else
+            {
+                container.Controls.Add(ctrl);
+            }
+
+        }
+
+        void parseChMap(string[] parms)
+        {
+            if (!BuildingChannelMap)
+                return;
+            if (parms[1] == "done")
+            {
+                BuildingChannelMap = false;
+            }
+            else if (parms[1] == "ins")
+            {
+                ChannelMappingData chMapData = new ChannelMappingData();
+                int modeIndex = int.Parse(parms[2]);
+                chMapData.Type = (MappingType)int.Parse(parms[3]);
+                chMapData.ServoIndices = GetValueArrayFromString<int>(parms[4]);
+                chMapData.ChannelIndices = GetValueArrayFromString<int>(parms[5]);
+                chMapData.Positionning = (PositionningType)int.Parse(parms[6]);
+
+                chMapData.Params = new decimal[chMapData.Type == MappingType.IK ? 2 : 0];
+                chMapData.chMapIndex = chMapIndex++;
+
+                ucMappingBase ucMapping = null;
+                switch (chMapData.Type)
+                {
+                    case MappingType.Direct:
+                        ucMapping = new ucMappingDirect(inputCount, outputCount);
+                        break;
+                    case MappingType.TankMix:
+                        ucMapping = new ucMappingTankMix(inputCount, outputCount);
+                        break;
+                    case MappingType.IK:
+                        ucMapping = new ucMappingIK(inputCount, outputCount);
+                        break;
+                }
+                ucMapping.chMapData = chMapData;
+                ucMapping.Top = buildHeight;
+                buildHeight += ucMapping.Height;
+                ucMapping.Width = panelChannelMap.Width - 20;
+                ucMapping.OnCommand += OnCommandReceived;
+                ucMapping.OnChMapTypeChanged += ucMapping_OnChMapTypeChanged;
+                AddControlToContainer(panelChannelMap, ucMapping);
+            }
+            else if (parms[1] == "setParams")
+            {
+                // chMap setParams <modeIndex> <chMapIndex> <param1>,<param2>...
+                int modeIndex = int.Parse(parms[2]);
+                int chMapIndex = int.Parse(parms[3]);
+
+                List<ucMappingBase> controlList = new List<ucMappingBase>(panelChannelMap.Controls.OfType<ucMappingBase>());
+                ucMappingIK uc = (ucMappingIK)controlList.Where(v => v.chMapData.chMapIndex == chMapIndex).FirstOrDefault();
+                ChannelMappingData chMapData = uc.chMapData;
+                chMapData.Params = GetValueArrayFromString<decimal>(parms[4]);
+                uc.SetControlValues();
+            }
+        }
+
+        void parseServo(string[] parms)
+        {
+            if (parms[1] == "reverse")
+            {
+                if (!buildingReverse)
+                    return;
+                if (parms[2] == "done")
+                {
+                    buildingReverse = false;
+                }
+                else
+                {
+                    int servoIndex = int.Parse(parms[2]);
+                    bool reversed = parms[3] == "1";
+                    if (servoIndex < outputCount)
+                    {
+                        ucReverseList[servoIndex].Checked = reversed;
+                    }
+                }
+            }
+        }
+
+        void SetcboModeChannel(int value)
+        {
+            if (this.InvokeRequired)
+                this.Invoke((MethodInvoker)delegate { SetcboModeChannel(value); });
+            else
+            {
+                cboModeChannel.SelectedIndex = value;
+            }
+        }
+
+        void SetcboModeMinMax(decimal min, decimal max)
+        {
+            if (this.InvokeRequired)
+                this.Invoke((MethodInvoker)delegate { SetcboModeMinMax(min, max); });
+            else
+            {
+                numChModeMin.Value = min;
+                numChModeMax.Value = max;
+            }
+        }
+
+        void parsechMode(string[] parms)
+        {
+            if (!BuildingChannelMap)
+                return;
+            if (parms[1] == "setChannel")
+            {
+                int chNumber = int.Parse(parms[2]);
+                SetcboModeChannel(chNumber + 1);
+            }
+            else if (parms[1] == "chValue")
+            {
+                decimal min = decimal.Parse(parms[3], CultureInfo.InvariantCulture);
+                decimal max = decimal.Parse(parms[4], CultureInfo.InvariantCulture);
+                SetcboModeMinMax(min, max);
+            }
+        }
+
         void serial_OnDataReceived(object sender, DataReceivedEventArgs e)
         {
-            logMessage(e.Data);
+            logMessage("Recv: " + e.Data);
             e.Data = e.Data.Trim();
             timeOutTimer.Stop();
             string[] parms = e.Data.Split(' ');
             List<KeyValue> kvList = ParseParams(parms);
+            if (waitPositiveAnswer && parms[0].ToLower() != "ok")
+            {
+                MessageBox.Show("Error", e.Data);
+            }
             if (parms[0] != "error")
             {
                 if (commandList.Count > 0)
                 {
                     sendData(commandList[0]);
                     commandList.RemoveAt(0);
-                    timeOutTimer.Start();
                 }
 
                 if (parms[0] == "servoState")
                 {
                     parseServoState(kvList);
+                }
+                else if (parms[0] == "chMap")
+                {
+                    parseChMap(parms);
+                }
+                else if (parms[0] == "servo")
+                {
+                    parseServo(parms);
+                }
+                else if (parms[0] == "chMode")
+                {
+                    parsechMode(parms);
                 }
                 else if (parms[0] == "Welcome")
                 {
@@ -199,6 +380,8 @@ namespace RobotControl
         {
             logMessage("Send: " + data);
             serial.SendCommand(data, true);
+            if(serial.IsConnected)
+                timeOutTimer.Start();
         }
 
         void LoadSerialCombo()
@@ -267,11 +450,20 @@ namespace RobotControl
 
         }
 
+        protected void FillNumericlCombo(ComboBox cbo, int minValue, int maxValue)
+        {
+            for (int i = minValue; i <= maxValue; i++)
+            {
+                cbo.Items.Add(i);
+            }
+        }
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            cboMappingMode.SelectedIndex = 0;
             LoadSerialCombo();
             FillFaudRates();
+            FillNumericlCombo(cboModeChannel, 0, inputCount-1);
             UpdateButtonStatus(false);
 
             txtLogs.VisibleChanged += new EventHandler(txtLogs_VisibleChanged);
@@ -279,30 +471,37 @@ namespace RobotControl
 
             ucServoAngleList = new List<ucServoControl>();
             ucServoPWMList = new List<ucServoControl>();
-            ucInputList =new List<ucServoControl>();
+            ucInputList = new List<ucServoControl>();
+            ucReverseList = new List<ucReverse>();
 
             for (int i = 0; i < outputCount; i++)
             {
-                ucSubtrim subTrimCtrl = new ucSubtrim(i+1);
+                ucSubtrim subTrimCtrl = new ucSubtrim(i);
                 subTrimCtrl.Left = (subTrimCtrl.Width + 10) * i;
-                tabSubtrim.Controls.Add(subTrimCtrl);
+                tabCenter.Controls.Add(subTrimCtrl);
                 subTrimCtrl.OnCommand += new EventHandler<CommandEventArgs>(OnCommandReceived);
 
-                ucServoControl scAngle = new ucServoControl(i + 1, -180, 180, "servoAngle", 0);
+                ucServoControl scAngle = new ucServoControl(i, -180, 180, "servoAngle", 0);
                 scAngle.Left = (scAngle.Width + 10) * i;
                 tabAngle.Controls.Add(scAngle);
                 scAngle.OnCommand += new EventHandler<CommandEventArgs>(OnCommandReceived);
                 ucServoAngleList.Add(scAngle);
 
-                ucServoControl scPWM = new ucServoControl(i + 1, 0, 3000, "servoPWM", 1500);
+                ucServoControl scPWM = new ucServoControl(i, 0, 3000, "servoPWM", 1500);
                 scPWM.Left = (scPWM.Width + 10) * i;
                 tabPWM.Controls.Add(scPWM);
                 scPWM.OnCommand += new EventHandler<CommandEventArgs>(OnCommandReceived);
                 ucServoPWMList.Add(scPWM);
+
+                ucReverse ctrlReverse = new ucReverse(i);
+                ctrlReverse.Left = (ctrlReverse.Width + 10) * i;
+                tabReverse.Controls.Add(ctrlReverse);
+                ctrlReverse.OnCommand += new EventHandler<CommandEventArgs>(OnCommandReceived);
+                ucReverseList.Add(ctrlReverse);
             }
             for (int i = 0; i < inputCount; i++)
             {
-                ucServoControl scInput = new ucServoControl(i + 1, 0, 100, "input", 50);
+                ucServoControl scInput = new ucServoControl(i, 0, 100, "input", 50);
                 scInput.Left = (scInput.Width + 10) * i;
                 tabInput.Controls.Add(scInput);
                 scInput.OnCommand += new EventHandler<CommandEventArgs>(OnCommandReceived);
@@ -331,6 +530,9 @@ namespace RobotControl
         {
             switch (e.CommandName)
             {
+                case "reverse":
+                    sendData("servo reverse " + e.Param[0].ToString() + " " + e.Param[1].ToString());
+                    break;
                 case "trim":
                     sendData("servo subtrim " + e.Param[0].ToString() + " " + e.Param[1].ToString());
                     break;
@@ -342,6 +544,77 @@ namespace RobotControl
                     break;
                 case "input":
                     sendData("input " + e.Param[0].ToString() + " " + (((float)(int)e.Param[1]) / 100).ToString());
+                    break;
+                case "chMap":
+                    ChannelMappingData chMapData = (ChannelMappingData)e.Param[1];
+                    string dataStr = "chMap " + e.Param[0] + " ";
+                    // modeIndex
+                    dataStr += cboMappingMode.SelectedIndex.ToString() + " ";
+                    if ((string)e.Param[0] == "upd" || (string)e.Param[0] == "ins")
+                    {
+                        // chMap ins <modeIndex> <ChMapType> <servo1>,<servo2>... <ch1>,<ch2>... <positionning>
+                        // chMap upd <modeIndex> <ChMapType> <servo1>,<servo2>... <ch1>,<ch2>... <positionning> <chMapIndex>
+
+                        // chMapType
+                        dataStr += ((int)chMapData.Type).ToString() + " ";
+
+                        // Servos
+                        for (int i = 0; i < chMapData.ServoIndices.Length; i++)
+                        {
+                            if (i > 0)
+                                dataStr += ",";
+                            dataStr += chMapData.ServoIndices[i].ToString();
+                        }
+                        dataStr += " ";
+
+                        // Channels
+                        for (int i = 0; i < chMapData.ChannelIndices.Length; i++)
+                        {
+                            if (i > 0)
+                                dataStr += ",";
+                            dataStr += chMapData.ChannelIndices[i].ToString();
+                        }
+                        dataStr += " ";
+                        
+                        //Positionning
+                        dataStr += ((int)chMapData.Positionning).ToString() + " ";
+                        // chMapIndex
+                        if ((string)e.Param[0] == "upd")
+                            dataStr += chMapData.chMapIndex.ToString();
+
+                        // Build params string
+                        if (chMapData.Type == MappingType.IK)
+                        {
+                            // chMap setParams <modeIndex> <chMapIndex> <param1>,<param2>...
+                             string paramsStr = "chMap setParams ";
+                            // modeIndex
+                            paramsStr += cboMappingMode.SelectedIndex.ToString() + " ";
+
+                            // chMapIndex
+                            paramsStr += chMapData.chMapIndex.ToString() + " ";
+
+                            // Params
+                            for (int i = 0; i < chMapData.Params.Length; i++)
+                            {
+                                if (i > 0)
+                                    paramsStr += ",";
+                                paramsStr += chMapData.Params[i].ToString();
+                            }
+                            commandList.Add(paramsStr);
+                        }
+                        sendData(dataStr);
+                        CreatingChMap = false;
+                    }
+                    else if ((string)e.Param[0] == "del")
+                    {
+                        if (!chMapData.IsNew)
+                        {
+                            BuildchannelMapControls(false);
+                            dataStr += chMapData.chMapIndex.ToString();
+                            sendData(dataStr);
+                        }
+                        //panelChannelMap.Controls.RemoveAt(chMapData.chMapIndex);
+                    }
                     break;
             }
         }
@@ -381,6 +654,151 @@ namespace RobotControl
         private void btnRefresh_Click(object sender, EventArgs e)
         {
             LoadSerialCombo();
+        }
+
+        void BuildchannelMapControls(bool bsendData = true)
+        {
+            buildHeight = 0;
+            CreatingChMap = false;
+            BuildingChannelMap = true;
+            chMapIndex = 0;
+            panelChannelMap.Controls.Clear();
+            string commandStr = "chMap dumpData " + cboMappingMode.SelectedIndex.ToString();
+            if (bsendData)
+            {
+                sendData(commandStr);
+            }
+            else
+            {
+                commandList.Add(commandStr);
+            }
+        }
+
+        private void tabControl1_Selected(object sender, TabControlEventArgs e)
+        {
+            CreatingChMap = false;
+            buildHeight = 0;
+            if (e.TabPage == tabMappings)
+            {
+                BuildchannelMapControls();
+            }
+            else if (e.TabPage == tabReverse)
+            {
+                buildingReverse = true;
+                sendData("servo reverseDump");
+            }
+        }
+
+        private void cboMappingMode_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            BuildchannelMapControls();
+        }
+
+        void AddNewChMap()
+        {
+            ChannelMappingData chMapData = new ChannelMappingData();
+            chMapData.chMapIndex = panelChannelMap.Controls.Count;
+            chMapData.ServoIndices = new int[] { 0 };
+            chMapData.ChannelIndices = new int[] { 0 };
+            chMapData.Params = new decimal[0];
+            chMapData.Type = MappingType.Direct;
+            chMapData.Positionning = PositionningType.Absolute;
+            chMapData.IsNew = true;
+
+            ucMappingBase ucMapping = new ucMappingDirect(inputCount, outputCount); ;
+            ucMapping.chMapData = chMapData;
+            ucMapping.Width = panelChannelMap.Width- 20;
+            ucMapping.Anchor |= AnchorStyles.Right;
+            ucMapping.Top = buildHeight;
+            buildHeight += ucMapping.Height;
+            ucMapping.OnCommand += OnCommandReceived;
+            ucMapping.OnChMapTypeChanged += new EventHandler<ChMapTypeChangedEventArgs>(ucMapping_OnChMapTypeChanged);
+            AddControlToContainer(panelChannelMap, ucMapping);
+            CreatingChMap = true;
+        }
+
+        void RearrangeMappingControls()
+        {
+            buildHeight = 0;
+            List<ucMappingBase> controlList = new List<ucMappingBase>();
+            controlList.AddRange(panelChannelMap.Controls.OfType<ucMappingBase>());
+            controlList.Sort(new UcMappingComparer());
+
+            foreach (ucMappingBase ctrl in controlList)
+            {
+                ctrl.Top = buildHeight;
+                buildHeight += ctrl.Height;
+            }
+        }
+
+        void ucMapping_OnChMapTypeChanged(object sender, ChMapTypeChangedEventArgs e)
+        {
+            if (updating)
+                return;
+            updating = true;
+            ChannelMappingData chMapData = e.chMapData;
+            ucMappingBase ucMapping = null;
+            switch (chMapData.Type)
+            {
+                case MappingType.Direct:
+                    ucMapping = new ucMappingDirect(inputCount, outputCount);
+                    Array.Resize(ref chMapData.ChannelIndices, 1);
+                    Array.Resize(ref chMapData.ServoIndices, 1);
+                    break;
+                case MappingType.TankMix:
+                    ucMapping = new ucMappingTankMix(inputCount, outputCount);
+                    Array.Resize(ref chMapData.ChannelIndices, 2);
+                    Array.Resize(ref chMapData.ServoIndices, 2);
+                    break;
+                case MappingType.IK:
+                    ucMapping = new ucMappingIK(inputCount, outputCount);
+                    Array.Resize(ref chMapData.ChannelIndices, 3);
+                    Array.Resize(ref chMapData.ServoIndices, 3);
+                    Array.Resize(ref chMapData.Params, 2);
+                    break;
+            }
+            ucMapping.chMapData = chMapData;
+            //ucMapping.Top = ucMapping.Height * chMapData.chMapIndex;
+            ucMapping.Width = panelChannelMap.Width - 20;
+            ucMapping.OnCommand += OnCommandReceived;
+            ucMapping.OnChMapTypeChanged += ucMapping_OnChMapTypeChanged;
+
+            panelChannelMap.Controls.RemoveAt(chMapData.chMapIndex);
+            AddControlToContainer(panelChannelMap, ucMapping);
+            RearrangeMappingControls();
+            updating = false;
+
+        }
+
+        private void btnAddChMap_Click(object sender, EventArgs e)
+        {
+            if (CreatingChMap)
+            {
+                MessageBox.Show("Please save the new mapping before adding a new one.");
+                return;
+            }
+            AddNewChMap();
+        }
+
+        private void cboModeChannel_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (BuildingChannelMap)
+                return;
+            sendData("chMode setChannel " + (cboModeChannel.SelectedIndex - 1).ToString());
+        }
+
+        private void numChModeMin_ValueChanged(object sender, EventArgs e)
+        {
+            if (BuildingChannelMap)
+                return;
+            sendData("chMode chValue " + cboMappingMode.SelectedIndex.ToString() + " " + numChModeMin.Value.ToString() + " " + numChModeMax.Value.ToString());
+        }
+
+        private void numChModeMax_ValueChanged(object sender, EventArgs e)
+        {
+            if (BuildingChannelMap)
+                return;
+            sendData("chMode chValue " + cboMappingMode.SelectedIndex.ToString() + " " + numChModeMin.Value.ToString() + " " + numChModeMax.Value.ToString());
         }
 
     }

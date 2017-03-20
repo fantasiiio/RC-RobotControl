@@ -26,7 +26,7 @@ namespace RobotControl
             txtValue.Minimum = min;
             txtValue.Maximum = max;
             sliderValue.Value = startValue;
-            chNumber = channelNumber - 1;
+            chNumber = channelNumber;
             grpAngle.Text = "ch" + chNumber.ToString();
             Updating = false;
         }
