@@ -127,12 +127,15 @@ void dumpAllModeChMap()
 
 void dumpModeChMapData(int modeIndex)
 {
+	printf("chMode setChannel %d\r\n", changeModeChIndex);
+	printf("chMode chValue %d %g %g\r\n", modeIndex, modeChMapList[modeIndex].min, modeChMapList[modeIndex].max);
     int size = modeChMapList[modeIndex].chMapList.size();       
     for(int chMapIndex = 0; chMapIndex < size; chMapIndex++) 
     {
         ChannelMapping *chMap = modeChMapList[modeIndex].chMapList[chMapIndex];
 		chMap->dumpData(modeIndex, chMapIndex);
-    }   
+    }
+	printf("chMap done\r\n");
 }
 
 void initServoDriver() {
@@ -172,6 +175,15 @@ bool checkParameterCount(int paramCount, int count, const char *commandName)
         return false;
     }   
     return true;
+}
+
+void dumpAllReverse()
+{
+	for(int i = 0; i < MAX_OUTPUT_CHANNELS; i++)
+	{
+		printf("servo reverse %d %d\r\n", i, servos[i].getReversed() ? 1 : 0);
+	}
+	printf("servo reverse done\r\n");
 }
 
 void parseServo(CommandArgs cmdArgs)
@@ -248,19 +260,10 @@ void parseServo(CommandArgs cmdArgs)
         servoIndex = atoi(cmdArgs.params[2]);
         printf("servoState index:%d angle:%g\r\n", servoIndex, servos[servoIndex].getPosition());
 	}
-
-	/*else if(strcmp(servoCommand, "get") == 0)
+	else if(strcmp(servoCommand, "reverseDump") == 0)
 	{
-        servoIndex = atoi(cmdArgs.params[3]);
-		if(strcmp(cmdArgs.params[2], "ppm") == 0)
-		{
-			printf("pwm %d %g\r\n", servoIndex, servos[servoIndex].getPwmUs());
-		} else if(strcmp(cmdArgs.params[2], "angle") == 0)
-		{
-			printf("angle %d %g\r\n", servoIndex, servos[servoIndex].getPosition());
-		}
-		
-	}*/
+		dumpAllReverse();
+	}	
     else if(strcmp(servoCommand, "help") == 0) 
     {
         printf("\r\n");
@@ -269,9 +272,10 @@ void parseServo(CommandArgs cmdArgs)
         printf("servo calibrate <index> <range> <degree>\r\n");
         printf("servo subtrim <index> <increment>\r\n");
         printf("servo reverse <index> <reversed>\r\n");
-        printf("servo getState <index>\r\n");		
-        printf("servo getPwm <index>\r\n");		
-        printf("servo getAngle <index>\r\n");		
+        //printf("servo getState <index>\r\n");		
+        //printf("servo getPwm <index>\r\n");		
+        //printf("servo getAngle <index>\r\n");
+        printf("servo reverseDump\r\n");
         return;
     }
     else
@@ -557,11 +561,11 @@ void checkChangeMode()
     }
 }
 
-// chMode range <modeIndex> <min> <max>
+// chMode chValue <modeIndex> <min> <max>
 // chMode setChannel <chIndex>
 void parseChMode(CommandArgs cmdArgs)
 {
-    if(strcmp(cmdArgs.params[1], "range") == 0)
+    if(strcmp(cmdArgs.params[1], "chValue") == 0)
     {
         int modeIndex = atoi(cmdArgs.params[2]);
         modeChMapList[modeIndex].min = atof(cmdArgs.params[3]);
@@ -580,7 +584,7 @@ void parseChMode(CommandArgs cmdArgs)
     }   
     else if(strcmp(cmdArgs.params[1], "help") == 0)
     {
-        printf("chMode range <modeIndex> <min> <max>\r\n");
+        printf("chMode chValue <modeIndex> <min> <max>\r\n");
         printf("chMode setChannel <chIndex>\r\n");
         printf("chMode dump\r\n");
     }else

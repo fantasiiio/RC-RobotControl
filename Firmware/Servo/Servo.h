@@ -45,6 +45,7 @@ public:
 	void setServoPulse(double pulse);	
 	float getDegrees();
 	float getPwmUs();
+	bool getReversed();
 protected:
 	float _position;
 	float _center;

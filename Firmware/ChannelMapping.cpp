@@ -72,7 +72,8 @@ void ChannelMapping::UpdateIK()
 	float dTarget = sqrt(targetX * targetX + targetY * targetY); // Lenght of target vector
 	float aTarget = RAD2DEG * atan2(targetY, targetX); // Angle of target vector
 	volatile float angleSoulder = aTarget + RAD2DEG * GetTriangleAngle2(len2, len1,dTarget);
-	volatile float angleElbow = 180 - RAD2DEG * GetTriangleAngle2(dTarget, len2, len1);
+	volatile float angleElbow = RAD2DEG * GetTriangleAngle2(dTarget, len2, len1);
+	angleElbow = 180.0 - angleElbow;
 	volatile float clawAngle = angleClawWorld - (angleSoulder - angleElbow);
 	_servos[_servoIndex[0]].setPosition(angleSoulder);
 	_servos[_servoIndex[1]].setPosition(angleElbow);

@@ -127,3 +127,8 @@ float Servo::getPwmUs()
 {
 	return _pwmMs * 1000000;
 }
+
+bool Servo::getReversed()
+{
+	return _reversed;
+}
