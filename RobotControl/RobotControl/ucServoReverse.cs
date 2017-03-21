@@ -11,9 +11,9 @@ namespace RobotControl
 {
     public partial class ucServoReverse : UserControl
     {
-        public event EventHandler<CommandEventArgs> OnCommand;
-
+        public event EventHandler<CommandEventArgs> OnCommand;        
         int chNumber;
+        bool updating = false;
 
         public ucServoReverse()
         {
@@ -26,7 +26,9 @@ namespace RobotControl
                 this.Invoke((MethodInvoker)delegate { SetChecked(chk); });
             else
             {
+                updating = true;
                 chkReverse.Checked = chk;
+                updating = false;
             }
         }
 
@@ -57,6 +59,8 @@ namespace RobotControl
 
         private void chkReverse_CheckedChanged(object sender, EventArgs e)
         {
+            if (updating)
+                return;
             SendCommand();
         }
     }
