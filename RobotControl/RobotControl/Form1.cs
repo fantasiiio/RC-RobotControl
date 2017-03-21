@@ -78,15 +78,26 @@ namespace RobotControl
             UpdateButtonStatus(false);
         }
 
-        void logMessage(string msg)
+        public void AppendText(RichTextBox box, string text, Color color)
+        {
+            box.SelectionStart = box.TextLength;
+            box.SelectionLength = 0;
+
+            box.SelectionColor = color;
+            box.AppendText(text);
+            box.SelectionColor = box.ForeColor;
+        }
+
+        void logMessage(string msg, Color color = default(Color))
         {
             if (txtLogs.InvokeRequired)
             {
-                txtLogs.Invoke((MethodInvoker)delegate { txtLogs.AppendText(msg + "\r\n"); });
+                txtLogs.Invoke((MethodInvoker)delegate { logMessage(msg, color); });
             }
             else
             {
-                txtLogs.AppendText(msg + "\r\n");
+                AppendText(txtLogs, msg + "\r\n", color);
+                //txtLogs.AppendText(msg + "\r\n");
             }
         }
 
@@ -324,8 +335,8 @@ namespace RobotControl
 
         void serial_OnDataReceived(object sender, DataReceivedEventArgs e)
         {
-            logMessage("Recv: " + e.Data);
             e.Data = e.Data.Trim();
+            logMessage("Recv: " + e.Data, Color.Red);
             timeOutTimer.Stop();
             string[] parms = e.Data.Split(' ');
             List<KeyValue> kvList = ParseParams(parms);
@@ -378,7 +389,7 @@ namespace RobotControl
 
         void sendData(string data)
         {
-            logMessage("Send: " + data);
+            logMessage("Send: " + data, Color.Blue);
             serial.SendCommand(data, true);
             if(serial.IsConnected)
                 timeOutTimer.Start();
@@ -660,7 +671,8 @@ namespace RobotControl
         {
             buildHeight = 0;
             CreatingChMap = false;
-            BuildingChannelMap = true;
+            if(serial.IsConnected)
+                BuildingChannelMap = true;
             chMapIndex = 0;
             panelChannelMap.Controls.Clear();
             string commandStr = "chMap dumpData " + cboMappingMode.SelectedIndex.ToString();

@@ -46,6 +46,8 @@ public:
 	float getDegrees();
 	float getPwmUs();
 	bool getReversed();
+	float getPwmRange();
+	float getPositionRange();
 protected:
 	float _position;
 	float _center;

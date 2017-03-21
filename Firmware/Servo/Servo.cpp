@@ -132,3 +132,13 @@ bool Servo::getReversed()
 {
 	return _reversed;
 }
+
+float Servo::getPwmRange()
+{
+	return _pwmRange;
+}
+
+float Servo::getPositionRange()
+{
+	return _positionRange;
+}

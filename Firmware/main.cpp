@@ -186,6 +186,16 @@ void dumpAllReverse()
 	printf("servo reverse done\r\n");
 }
 
+void dumpServoCalibrate()
+{
+	for(int i = 0; i < MAX_OUTPUT_CHANNELS; i++)
+	{
+		printf("servo calibrate %d %d %d\r\n", i, servos[i].getPwmRange() ? 1 : 0, servos[i].getPositionRange() ? 1 : 0);
+	}
+	printf("servo calibrate done\r\n");
+}
+
+
 void parseServo(CommandArgs cmdArgs)
 {
     int servoIndex, degree, reverse;
@@ -245,7 +255,7 @@ void parseServo(CommandArgs cmdArgs)
         mcfg.servo_reversed[servoIndex] = reverse;
         writeConfigToFlash();
     }
-	else if(strcmp(servoCommand, "getState") == 0)
+	/*else if(strcmp(servoCommand, "getState") == 0)
 	{
         servoIndex = atoi(cmdArgs.params[2]);
         printf("servoState index:%d pwm:%g angle:%g\r\n", servoIndex, servos[servoIndex].getPwmUs(), servos[servoIndex].getPosition());
@@ -259,11 +269,15 @@ void parseServo(CommandArgs cmdArgs)
 	{
         servoIndex = atoi(cmdArgs.params[2]);
         printf("servoState index:%d angle:%g\r\n", servoIndex, servos[servoIndex].getPosition());
-	}
+	}*/
 	else if(strcmp(servoCommand, "reverseDump") == 0)
 	{
 		dumpAllReverse();
-	}	
+	}
+	else if(strcmp(servoCommand, "calibrateDump") == 0)
+	{
+		dumpServoCalibrate();
+	}
     else if(strcmp(servoCommand, "help") == 0) 
     {
         printf("\r\n");
@@ -276,6 +290,7 @@ void parseServo(CommandArgs cmdArgs)
         //printf("servo getPwm <index>\r\n");		
         //printf("servo getAngle <index>\r\n");
         printf("servo reverseDump\r\n");
+		printf("servo calibrateDump\r\n");
         return;
     }
     else

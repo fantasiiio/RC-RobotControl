@@ -55,12 +55,12 @@
             this.cboModeChannel = new System.Windows.Forms.ComboBox();
             this.label3 = new System.Windows.Forms.Label();
             this.btnAddChMap = new System.Windows.Forms.Button();
+            this.panelChannelMap = new System.Windows.Forms.Panel();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.inputOutputToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.EnableMappingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.EnablePPMToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.panelChannelMap = new System.Windows.Forms.Panel();
-            this.txtLogs = new System.Windows.Forms.TextBox();
+            this.txtLogs = new System.Windows.Forms.RichTextBox();
             this.tabControl1.SuspendLayout();
             this.tabConnect.SuspendLayout();
             this.tabMappings.SuspendLayout();
@@ -89,12 +89,12 @@
             // 
             // tabConnect
             // 
+            this.tabConnect.Controls.Add(this.txtLogs);
             this.tabConnect.Controls.Add(this.btnRefresh);
             this.tabConnect.Controls.Add(this.btnSend);
             this.tabConnect.Controls.Add(this.txtCommand);
             this.tabConnect.Controls.Add(this.btnDisconnect);
             this.tabConnect.Controls.Add(this.btnConnect);
-            this.tabConnect.Controls.Add(this.txtLogs);
             this.tabConnect.Controls.Add(this.label2);
             this.tabConnect.Controls.Add(this.label4);
             this.tabConnect.Controls.Add(this.cboSerialDevices);
@@ -387,6 +387,15 @@
             this.btnAddChMap.UseVisualStyleBackColor = true;
             this.btnAddChMap.Click += new System.EventHandler(this.btnAddChMap_Click);
             // 
+            // panelChannelMap
+            // 
+            this.panelChannelMap.AutoScroll = true;
+            this.panelChannelMap.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.panelChannelMap.Location = new System.Drawing.Point(0, 76);
+            this.panelChannelMap.Name = "panelChannelMap";
+            this.panelChannelMap.Size = new System.Drawing.Size(637, 330);
+            this.panelChannelMap.TabIndex = 2;
+            // 
             // menuStrip1
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -420,28 +429,13 @@
             this.EnablePPMToolStripMenuItem.Text = "Enable PPM";
             this.EnablePPMToolStripMenuItem.Click += new System.EventHandler(this.EnablePPMToolStripMenuItem_Click);
             // 
-            // panelChannelMap
-            // 
-            this.panelChannelMap.AutoScroll = true;
-            this.panelChannelMap.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panelChannelMap.Location = new System.Drawing.Point(0, 76);
-            this.panelChannelMap.Name = "panelChannelMap";
-            this.panelChannelMap.Size = new System.Drawing.Size(637, 330);
-            this.panelChannelMap.TabIndex = 2;
-            // 
             // txtLogs
             // 
-            this.txtLogs.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtLogs.Font = new System.Drawing.Font("DejaVu Sans Mono", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtLogs.Location = new System.Drawing.Point(3, 86);
-            this.txtLogs.Multiline = true;
+            this.txtLogs.Location = new System.Drawing.Point(6, 86);
             this.txtLogs.Name = "txtLogs";
-            this.txtLogs.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.txtLogs.Size = new System.Drawing.Size(628, 284);
-            this.txtLogs.TabIndex = 14;
-            this.txtLogs.WordWrap = false;
+            this.txtLogs.Size = new System.Drawing.Size(625, 286);
+            this.txtLogs.TabIndex = 20;
+            this.txtLogs.Text = "";
             // 
             // Form1
             // 
@@ -503,7 +497,7 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.NumericUpDown numChModeMin;
         private System.Windows.Forms.Panel panelChannelMap;
-        private System.Windows.Forms.TextBox txtLogs;
+        private System.Windows.Forms.RichTextBox txtLogs;
     }
 }
 

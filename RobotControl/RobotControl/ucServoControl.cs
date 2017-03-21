@@ -49,7 +49,9 @@ namespace RobotControl
 
         private void ucServoControl_Load(object sender, EventArgs e)
         {
+            Updating = true;
             txtValue.Value = sliderValue.Value;
+            Updating = false;
         }
 
         private void txtAngle_Leave(object sender, EventArgs e)
