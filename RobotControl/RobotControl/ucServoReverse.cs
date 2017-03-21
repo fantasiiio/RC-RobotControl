@@ -9,13 +9,13 @@ using System.Windows.Forms;
 
 namespace RobotControl
 {
-    public partial class ucReverse : UserControl
+    public partial class ucServoReverse : UserControl
     {
         public event EventHandler<CommandEventArgs> OnCommand;
 
         int chNumber;
 
-        public ucReverse()
+        public ucServoReverse()
         {
             InitializeComponent();
         }
@@ -36,7 +36,7 @@ namespace RobotControl
             set { SetChecked(value); }
         }
 
-        public ucReverse(int chNumber)
+        public ucServoReverse(int chNumber)
         {
             this.chNumber = chNumber;
             InitializeComponent();

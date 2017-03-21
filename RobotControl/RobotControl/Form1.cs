@@ -26,13 +26,15 @@ namespace RobotControl
         List<ucServoControl> ucServoAngleList;
         List<ucServoControl> ucServoPWMList;
         List<ucServoControl> ucInputList;
-        List<ucReverse> ucReverseList;
+        List<ucServoReverse> ucServoReverseList;
+        List<ucServoCalibrate> ucServoCalibrateList;
         bool BuildingChannelMap = false;
+        bool buildingReverse = false;
+        bool buildingCalibrate = false;
         int chMapIndex;
         bool CreatingChMap = false;
         bool updating = false;
         int buildHeight;
-        bool buildingReverse = false;
         bool waitPositiveAnswer = false;
 
         public Form1()
@@ -97,6 +99,9 @@ namespace RobotControl
             else
             {
                 AppendText(txtLogs, msg + "\r\n", color);
+                txtLogs.SelectionStart = txtLogs.Text.Length;
+                // scroll it automatically
+                txtLogs.ScrollToCaret();
                 //txtLogs.AppendText(msg + "\r\n");
             }
         }
@@ -289,10 +294,30 @@ namespace RobotControl
                     bool reversed = parms[3] == "1";
                     if (servoIndex < outputCount)
                     {
-                        ucReverseList[servoIndex].Checked = reversed;
+                        ucServoReverseList[servoIndex].Checked = reversed;
                     }
                 }
             }
+            else if (parms[1] == "calibrate")
+            {
+                if (!buildingCalibrate)
+                    return;
+                if (parms[2] == "done")
+                {
+                    buildingCalibrate = false;
+                }
+                else
+                {
+                    int servoIndex = int.Parse(parms[2]);
+                    decimal maxPWM = decimal.Parse(parms[3]);
+                    decimal maxAngle = decimal.Parse(parms[4]);
+                    if (servoIndex < outputCount)
+                    {
+                        ucServoCalibrateList[servoIndex].SetValues(maxPWM, maxAngle);
+                    }
+                }
+            }
+
         }
 
         void SetcboModeChannel(int value)
@@ -483,7 +508,8 @@ namespace RobotControl
             ucServoAngleList = new List<ucServoControl>();
             ucServoPWMList = new List<ucServoControl>();
             ucInputList = new List<ucServoControl>();
-            ucReverseList = new List<ucReverse>();
+            ucServoReverseList = new List<ucServoReverse>();
+            ucServoCalibrateList = new List<ucServoCalibrate>();
 
             for (int i = 0; i < outputCount; i++)
             {
@@ -504,11 +530,17 @@ namespace RobotControl
                 scPWM.OnCommand += new EventHandler<CommandEventArgs>(OnCommandReceived);
                 ucServoPWMList.Add(scPWM);
 
-                ucReverse ctrlReverse = new ucReverse(i);
+                ucServoReverse ctrlReverse = new ucServoReverse(i);
                 ctrlReverse.Left = (ctrlReverse.Width + 10) * i;
                 tabReverse.Controls.Add(ctrlReverse);
                 ctrlReverse.OnCommand += new EventHandler<CommandEventArgs>(OnCommandReceived);
-                ucReverseList.Add(ctrlReverse);
+                ucServoReverseList.Add(ctrlReverse);
+
+                ucServoCalibrate ctrlCalibrate = new ucServoCalibrate(i);
+                ctrlCalibrate.Left = (ctrlCalibrate.Width + 10) * i;
+                tabCalibrate.Controls.Add(ctrlCalibrate);
+                ctrlCalibrate.OnCommand += new EventHandler<CommandEventArgs>(OnCommandReceived);
+                ucServoCalibrateList.Add(ctrlCalibrate);
             }
             for (int i = 0; i < inputCount; i++)
             {
@@ -541,6 +573,9 @@ namespace RobotControl
         {
             switch (e.CommandName)
             {
+                case "calibrate":
+                    sendData("servo calibrate " + e.Param[0].ToString() + " " + e.Param[1].ToString() + " " + e.Param[2].ToString());
+                    break;
                 case "reverse":
                     sendData("servo reverse " + e.Param[0].ToString() + " " + e.Param[1].ToString());
                     break;
@@ -698,6 +733,11 @@ namespace RobotControl
             {
                 buildingReverse = true;
                 sendData("servo reverseDump");
+            }
+            else if (e.TabPage == tabCalibrate)
+            {
+                buildingCalibrate = true;
+                sendData("servo calibrateDump");
             }
         }
 

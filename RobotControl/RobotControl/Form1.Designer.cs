@@ -30,6 +30,7 @@
         {
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabConnect = new System.Windows.Forms.TabPage();
+            this.txtLogs = new System.Windows.Forms.RichTextBox();
             this.btnRefresh = new System.Windows.Forms.Button();
             this.btnSend = new System.Windows.Forms.Button();
             this.txtCommand = new System.Windows.Forms.TextBox();
@@ -41,9 +42,9 @@
             this.cboBaudRates = new System.Windows.Forms.ComboBox();
             this.tabCenter = new System.Windows.Forms.TabPage();
             this.tabReverse = new System.Windows.Forms.TabPage();
+            this.tabCalibrate = new System.Windows.Forms.TabPage();
             this.tabAngle = new System.Windows.Forms.TabPage();
             this.tabPWM = new System.Windows.Forms.TabPage();
-            this.tabInput = new System.Windows.Forms.TabPage();
             this.tabMappings = new System.Windows.Forms.TabPage();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.label6 = new System.Windows.Forms.Label();
@@ -56,11 +57,11 @@
             this.label3 = new System.Windows.Forms.Label();
             this.btnAddChMap = new System.Windows.Forms.Button();
             this.panelChannelMap = new System.Windows.Forms.Panel();
+            this.tabInput = new System.Windows.Forms.TabPage();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.inputOutputToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.EnableMappingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.EnablePPMToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.txtLogs = new System.Windows.Forms.RichTextBox();
             this.tabControl1.SuspendLayout();
             this.tabConnect.SuspendLayout();
             this.tabMappings.SuspendLayout();
@@ -75,10 +76,11 @@
             this.tabControl1.Controls.Add(this.tabConnect);
             this.tabControl1.Controls.Add(this.tabCenter);
             this.tabControl1.Controls.Add(this.tabReverse);
+            this.tabControl1.Controls.Add(this.tabCalibrate);
             this.tabControl1.Controls.Add(this.tabAngle);
             this.tabControl1.Controls.Add(this.tabPWM);
-            this.tabControl1.Controls.Add(this.tabInput);
             this.tabControl1.Controls.Add(this.tabMappings);
+            this.tabControl1.Controls.Add(this.tabInput);
             this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabControl1.Location = new System.Drawing.Point(0, 24);
             this.tabControl1.Name = "tabControl1";
@@ -106,6 +108,14 @@
             this.tabConnect.TabIndex = 0;
             this.tabConnect.Text = "Connect";
             this.tabConnect.UseVisualStyleBackColor = true;
+            // 
+            // txtLogs
+            // 
+            this.txtLogs.Location = new System.Drawing.Point(6, 86);
+            this.txtLogs.Name = "txtLogs";
+            this.txtLogs.Size = new System.Drawing.Size(625, 286);
+            this.txtLogs.TabIndex = 20;
+            this.txtLogs.Text = "";
             // 
             // btnRefresh
             // 
@@ -213,6 +223,15 @@
             this.tabReverse.Text = "Reverse";
             this.tabReverse.UseVisualStyleBackColor = true;
             // 
+            // tabCalibrate
+            // 
+            this.tabCalibrate.Location = new System.Drawing.Point(4, 22);
+            this.tabCalibrate.Name = "tabCalibrate";
+            this.tabCalibrate.Size = new System.Drawing.Size(637, 406);
+            this.tabCalibrate.TabIndex = 7;
+            this.tabCalibrate.Text = "Calibrate";
+            this.tabCalibrate.UseVisualStyleBackColor = true;
+            // 
             // tabAngle
             // 
             this.tabAngle.Location = new System.Drawing.Point(4, 22);
@@ -230,16 +249,6 @@
             this.tabPWM.TabIndex = 3;
             this.tabPWM.Text = "PWM";
             this.tabPWM.UseVisualStyleBackColor = true;
-            // 
-            // tabInput
-            // 
-            this.tabInput.Location = new System.Drawing.Point(4, 22);
-            this.tabInput.Name = "tabInput";
-            this.tabInput.Padding = new System.Windows.Forms.Padding(3);
-            this.tabInput.Size = new System.Drawing.Size(637, 406);
-            this.tabInput.TabIndex = 4;
-            this.tabInput.Text = "Inputs";
-            this.tabInput.UseVisualStyleBackColor = true;
             // 
             // tabMappings
             // 
@@ -396,6 +405,16 @@
             this.panelChannelMap.Size = new System.Drawing.Size(637, 330);
             this.panelChannelMap.TabIndex = 2;
             // 
+            // tabInput
+            // 
+            this.tabInput.Location = new System.Drawing.Point(4, 22);
+            this.tabInput.Name = "tabInput";
+            this.tabInput.Padding = new System.Windows.Forms.Padding(3);
+            this.tabInput.Size = new System.Drawing.Size(637, 406);
+            this.tabInput.TabIndex = 4;
+            this.tabInput.Text = "Inputs";
+            this.tabInput.UseVisualStyleBackColor = true;
+            // 
             // menuStrip1
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -428,14 +447,6 @@
             this.EnablePPMToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
             this.EnablePPMToolStripMenuItem.Text = "Enable PPM";
             this.EnablePPMToolStripMenuItem.Click += new System.EventHandler(this.EnablePPMToolStripMenuItem_Click);
-            // 
-            // txtLogs
-            // 
-            this.txtLogs.Location = new System.Drawing.Point(6, 86);
-            this.txtLogs.Name = "txtLogs";
-            this.txtLogs.Size = new System.Drawing.Size(625, 286);
-            this.txtLogs.TabIndex = 20;
-            this.txtLogs.Text = "";
             // 
             // Form1
             // 
@@ -498,6 +509,7 @@
         private System.Windows.Forms.NumericUpDown numChModeMin;
         private System.Windows.Forms.Panel panelChannelMap;
         private System.Windows.Forms.RichTextBox txtLogs;
+        private System.Windows.Forms.TabPage tabCalibrate;
     }
 }
 

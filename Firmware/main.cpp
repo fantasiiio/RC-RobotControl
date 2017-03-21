@@ -190,7 +190,7 @@ void dumpServoCalibrate()
 {
 	for(int i = 0; i < MAX_OUTPUT_CHANNELS; i++)
 	{
-		printf("servo calibrate %d %d %d\r\n", i, servos[i].getPwmRange() ? 1 : 0, servos[i].getPositionRange() ? 1 : 0);
+		printf("servo calibrate %d %g %g\r\n", i, servos[i].getPwmRange() * 1000000.0 , servos[i].getPositionRange() );
 	}
 	printf("servo calibrate done\r\n");
 }

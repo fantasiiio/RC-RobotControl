@@ -101,11 +101,17 @@
     <Compile Include="ucMappingTankMix.Designer.cs">
       <DependentUpon>ucMappingTankMix.cs</DependentUpon>
     </Compile>
-    <Compile Include="ucReverse.cs">
+    <Compile Include="ucServoReverse.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="ucReverse.Designer.cs">
-      <DependentUpon>ucReverse.cs</DependentUpon>
+    <Compile Include="ucServoReverse.Designer.cs">
+      <DependentUpon>ucServoReverse.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ucServoCalibrate.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ucServoCalibrate.Designer.cs">
+      <DependentUpon>ucServoCalibrate.cs</DependentUpon>
     </Compile>
     <Compile Include="ucServoControl.cs">
       <SubType>UserControl</SubType>
@@ -147,8 +153,11 @@
     <EmbeddedResource Include="ucMappingTankMix.resx">
       <DependentUpon>ucMappingTankMix.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ucReverse.resx">
-      <DependentUpon>ucReverse.cs</DependentUpon>
+    <EmbeddedResource Include="ucServoReverse.resx">
+      <DependentUpon>ucServoReverse.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ucServoCalibrate.resx">
+      <DependentUpon>ucServoCalibrate.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ucServoControl.resx">
       <DependentUpon>ucServoControl.cs</DependentUpon>

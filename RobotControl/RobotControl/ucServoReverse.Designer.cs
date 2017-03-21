@@ -1,6 +1,6 @@
 ﻿namespace RobotControl
 {
-    partial class ucReverse
+    partial class ucServoReverse
     {
         /// <summary> 
         /// Required designer variable.
