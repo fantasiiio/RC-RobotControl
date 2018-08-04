@@ -62,6 +62,8 @@
             this.inputOutputToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.EnableMappingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.EnablePPMToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.chkIncoming = new System.Windows.Forms.CheckBox();
+            this.chkOutgoing = new System.Windows.Forms.CheckBox();
             this.tabControl1.SuspendLayout();
             this.tabConnect.SuspendLayout();
             this.tabMappings.SuspendLayout();
@@ -91,6 +93,8 @@
             // 
             // tabConnect
             // 
+            this.tabConnect.Controls.Add(this.chkOutgoing);
+            this.tabConnect.Controls.Add(this.chkIncoming);
             this.tabConnect.Controls.Add(this.txtLogs);
             this.tabConnect.Controls.Add(this.btnRefresh);
             this.tabConnect.Controls.Add(this.btnSend);
@@ -437,16 +441,38 @@
             // EnableMappingToolStripMenuItem
             // 
             this.EnableMappingToolStripMenuItem.Name = "EnableMappingToolStripMenuItem";
-            this.EnableMappingToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
+            this.EnableMappingToolStripMenuItem.Size = new System.Drawing.Size(206, 22);
             this.EnableMappingToolStripMenuItem.Text = "Enable Mappings";
             this.EnableMappingToolStripMenuItem.Click += new System.EventHandler(this.enableMappingToolStripMenuItem_Click);
             // 
             // EnablePPMToolStripMenuItem
             // 
             this.EnablePPMToolStripMenuItem.Name = "EnablePPMToolStripMenuItem";
-            this.EnablePPMToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
-            this.EnablePPMToolStripMenuItem.Text = "Enable PPM";
+            this.EnablePPMToolStripMenuItem.Size = new System.Drawing.Size(206, 22);
+            this.EnablePPMToolStripMenuItem.Text = "Enable PPM (RC Control)";
             this.EnablePPMToolStripMenuItem.Click += new System.EventHandler(this.EnablePPMToolStripMenuItem_Click);
+            // 
+            // chkIncoming
+            // 
+            this.chkIncoming.AutoSize = true;
+            this.chkIncoming.Location = new System.Drawing.Point(562, 61);
+            this.chkIncoming.Name = "chkIncoming";
+            this.chkIncoming.Size = new System.Drawing.Size(69, 17);
+            this.chkIncoming.TabIndex = 21;
+            this.chkIncoming.Text = "Incoming";
+            this.chkIncoming.UseVisualStyleBackColor = true;
+            this.chkIncoming.CheckedChanged += new System.EventHandler(this.chkViewIncoming_CheckedChanged);
+            // 
+            // chkOutgoing
+            // 
+            this.chkOutgoing.AutoSize = true;
+            this.chkOutgoing.Location = new System.Drawing.Point(465, 61);
+            this.chkOutgoing.Name = "chkOutgoing";
+            this.chkOutgoing.Size = new System.Drawing.Size(69, 17);
+            this.chkOutgoing.TabIndex = 22;
+            this.chkOutgoing.Text = "Outgoing";
+            this.chkOutgoing.UseVisualStyleBackColor = true;
+            this.chkOutgoing.CheckedChanged += new System.EventHandler(this.chkOutcomming_CheckedChanged);
             // 
             // Form1
             // 
@@ -510,6 +536,8 @@
         private System.Windows.Forms.Panel panelChannelMap;
         private System.Windows.Forms.RichTextBox txtLogs;
         private System.Windows.Forms.TabPage tabCalibrate;
+        private System.Windows.Forms.CheckBox chkIncoming;
+        private System.Windows.Forms.CheckBox chkOutgoing;
     }
 }
 

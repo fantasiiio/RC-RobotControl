@@ -36,10 +36,15 @@ namespace RobotControl
         bool updating = false;
         int buildHeight;
         bool waitPositiveAnswer = false;
+        bool viewIncoming = true;
+        bool viewOutgoing = true;
 
         public Form1()
         {
             InitializeComponent();
+
+            chkIncoming.Checked = this.viewIncoming;
+            chkOutgoing.Checked = this.viewOutgoing;
 
             timeOutTimer = new System.Windows.Forms.Timer();
             timeOutTimer.Interval = 2000;
@@ -361,7 +366,8 @@ namespace RobotControl
         void serial_OnDataReceived(object sender, DataReceivedEventArgs e)
         {
             e.Data = e.Data.Trim();
-            logMessage("Recv: " + e.Data, Color.Red);
+            if (this.viewIncoming)
+                logMessage("Recv: " + e.Data, Color.Red);
             timeOutTimer.Stop();
             string[] parms = e.Data.Split(' ');
             List<KeyValue> kvList = ParseParams(parms);
@@ -414,7 +420,8 @@ namespace RobotControl
 
         void sendData(string data)
         {
-            logMessage("Send: " + data, Color.Blue);
+            if(this.viewOutgoing)
+                logMessage("Send: " + data, Color.Blue);
             serial.SendCommand(data, true);
             if(serial.IsConnected)
                 timeOutTimer.Start();
@@ -851,6 +858,16 @@ namespace RobotControl
             if (BuildingChannelMap)
                 return;
             sendData("chMode chValue " + cboMappingMode.SelectedIndex.ToString() + " " + numChModeMin.Value.ToString() + " " + numChModeMax.Value.ToString());
+        }
+
+        private void chkViewIncoming_CheckedChanged(object sender, EventArgs e)
+        {
+            this.viewIncoming = chkIncoming.Checked;
+        }
+
+        private void chkOutcomming_CheckedChanged(object sender, EventArgs e)
+        {
+            this.viewOutgoing = chkOutgoing.Checked;
         }
 
     }

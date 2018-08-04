@@ -95,17 +95,19 @@ namespace WindowsManager.Services
             //Disconnecting
             try
             {
+                if (serialPort.IsOpen)
+                    serialPort.Close();
                 
                 if (OnDisconnected != null)
                     OnDisconnected(this, new EventArgs());
 
                 Log("Disconnected");
+
             }
             catch (Exception ex)
             {
                 Log("Disconnect Error: " + ex.Message);
             }
-            serialPort.Close();
         }
 
         public bool Disconnect()

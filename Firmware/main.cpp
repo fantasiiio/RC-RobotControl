@@ -55,6 +55,7 @@ public:
 #define MAX_MODE 3
 ModeChMap modeChMapList[MAX_MODE];
 vector<ChannelMapping*> *currentChMapList = NULL;
+int ChangeModeSecurityCounter = 0; // For security, sometime there is a short signal glitch that switch mapping and make unwanted servo commands
 
 FillBuffer fillBuffer;
 
@@ -127,15 +128,15 @@ void dumpAllModeChMap()
 
 void dumpModeChMapData(int modeIndex)
 {
-	printf("chMode setChannel %d\r\n", changeModeChIndex);
-	printf("chMode chValue %d %g %g\r\n", modeIndex, modeChMapList[modeIndex].min, modeChMapList[modeIndex].max);
+    printf("chMode setChannel %d\r\n", changeModeChIndex);
+    printf("chMode chValue %d %g %g\r\n", modeIndex, modeChMapList[modeIndex].min, modeChMapList[modeIndex].max);
     int size = modeChMapList[modeIndex].chMapList.size();       
     for(int chMapIndex = 0; chMapIndex < size; chMapIndex++) 
     {
         ChannelMapping *chMap = modeChMapList[modeIndex].chMapList[chMapIndex];
-		chMap->dumpData(modeIndex, chMapIndex);
+        chMap->dumpData(modeIndex, chMapIndex);
     }
-	printf("chMap done\r\n");
+    printf("chMap done\r\n");
 }
 
 void initServoDriver() {
@@ -152,18 +153,18 @@ void rxCallback() {
     char c;
     c = pc.getc();
     
-	if(c != '\n')
-	{
-		command[cmdIndex++] = c;
-		command[cmdIndex] = 0;
-	}
-	
-	if(cmdIndex == COMMAND_MAX_SIZE ||  c == '\r')
-	{
-		command[cmdIndex-1] = 0;
-		commandReady = 1;
-		cmdIndex = 0;
-	}
+    if(c != '\n')
+    {
+        command[cmdIndex++] = c;
+        command[cmdIndex] = 0;
+    }
+    
+    if(cmdIndex == COMMAND_MAX_SIZE ||  c == '\r')
+    {
+        command[cmdIndex-1] = 0;
+        commandReady = 1;
+        cmdIndex = 0;
+    }
 
 }
 
@@ -179,20 +180,20 @@ bool checkParameterCount(int paramCount, int count, const char *commandName)
 
 void dumpAllReverse()
 {
-	for(int i = 0; i < MAX_OUTPUT_CHANNELS; i++)
-	{
-		printf("servo reverse %d %d\r\n", i, servos[i].getReversed() ? 1 : 0);
-	}
-	printf("servo reverse done\r\n");
+    for(int i = 0; i < MAX_OUTPUT_CHANNELS; i++)
+    {
+        printf("servo reverse %d %d\r\n", i, servos[i].getReversed() ? 1 : 0);
+    }
+    printf("servo reverse done\r\n");
 }
 
 void dumpServoCalibrate()
 {
-	for(int i = 0; i < MAX_OUTPUT_CHANNELS; i++)
-	{
-		printf("servo calibrate %d %g %g\r\n", i, servos[i].getPwmRange() * 1000000.0 , servos[i].getPositionRange() );
-	}
-	printf("servo calibrate done\r\n");
+    for(int i = 0; i < MAX_OUTPUT_CHANNELS; i++)
+    {
+        printf("servo calibrate %d %g %g\r\n", i, servos[i].getPwmRange() * 1000000.0 , servos[i].getPositionRange() );
+    }
+    printf("servo calibrate done\r\n");
 }
 
 
@@ -210,7 +211,7 @@ void parseServo(CommandArgs cmdArgs)
         servoIndex = atoi(cmdArgs.params[2]);
         float angle = atoi(cmdArgs.params[3]);
         servos[servoIndex].setPosition(angle);
-        printf("servoState index:%d pwm:%g\r\n", servoIndex, servos[servoIndex].getPwmUs());		
+        printf("servoState index:%d pwm:%g\r\n", servoIndex, servos[servoIndex].getPwmUs());        
     }
     else if(strcmp(servoCommand, "calibrate") == 0)
     {
@@ -232,7 +233,7 @@ void parseServo(CommandArgs cmdArgs)
         float pwm = atoi(cmdArgs.params[3]);
         servos[servoIndex].pwm(pwm);
         printf("servoState index:%d angle:%g\r\n", servoIndex, servos[servoIndex].getPosition());
-		
+        
     }
     else if(strcmp(servoCommand, "subtrim") == 0)
     {
@@ -255,29 +256,29 @@ void parseServo(CommandArgs cmdArgs)
         mcfg.servo_reversed[servoIndex] = reverse;
         writeConfigToFlash();
     }
-	/*else if(strcmp(servoCommand, "getState") == 0)
-	{
+    /*else if(strcmp(servoCommand, "getState") == 0)
+    {
         servoIndex = atoi(cmdArgs.params[2]);
         printf("servoState index:%d pwm:%g angle:%g\r\n", servoIndex, servos[servoIndex].getPwmUs(), servos[servoIndex].getPosition());
-	}
-	else if(strcmp(servoCommand, "getPwm") == 0)
-	{
+    }
+    else if(strcmp(servoCommand, "getPwm") == 0)
+    {
         servoIndex = atoi(cmdArgs.params[2]);
         printf("servoState index:%d pwm:%g\r\n", servoIndex, servos[servoIndex].getPwmUs());
-	}
-	else if(strcmp(servoCommand, "getAngle") == 0)
-	{
+    }
+    else if(strcmp(servoCommand, "getAngle") == 0)
+    {
         servoIndex = atoi(cmdArgs.params[2]);
         printf("servoState index:%d angle:%g\r\n", servoIndex, servos[servoIndex].getPosition());
-	}*/
-	else if(strcmp(servoCommand, "reverseDump") == 0)
-	{
-		dumpAllReverse();
-	}
-	else if(strcmp(servoCommand, "calibrateDump") == 0)
-	{
-		dumpServoCalibrate();
-	}
+    }*/
+    else if(strcmp(servoCommand, "reverseDump") == 0)
+    {
+        dumpAllReverse();
+    }
+    else if(strcmp(servoCommand, "calibrateDump") == 0)
+    {
+        dumpServoCalibrate();
+    }
     else if(strcmp(servoCommand, "help") == 0) 
     {
         printf("\r\n");
@@ -286,17 +287,17 @@ void parseServo(CommandArgs cmdArgs)
         printf("servo calibrate <index> <range> <degree>\r\n");
         printf("servo subtrim <index> <increment>\r\n");
         printf("servo reverse <index> <reversed>\r\n");
-        //printf("servo getState <index>\r\n");		
-        //printf("servo getPwm <index>\r\n");		
+        //printf("servo getState <index>\r\n");        
+        //printf("servo getPwm <index>\r\n");        
         //printf("servo getAngle <index>\r\n");
         printf("servo reverseDump\r\n");
-		printf("servo calibrateDump\r\n");
+        printf("servo calibrateDump\r\n");
         return;
     }
     else
     {
         printf("Syntax Error\r\n");
-		return;
+        return;
     }
 
     printf("OK\r\n");
@@ -333,8 +334,8 @@ void parseCalibrate(CommandArgs cmdArgs)
     }
     else if(strcmp(cmdArgs.params[1], "help") == 0) 
     {
-		printf("calibrate ppm\r\n");
-		printf("calibrate end\r\n");
+        printf("calibrate ppm\r\n");
+        printf("calibrate end\r\n");
     }
     else 
     {
@@ -376,36 +377,36 @@ void applyConfig()
 void parsePPM(CommandArgs cmdArgs)
 {
     if(strcmp(cmdArgs.params[1], "show") == 0)
-	{
-		current_activity = 2;
-		printf("OK\r\n");
-	}
-	else if(strcmp(cmdArgs.params[1], "stop") == 0)
-	{
-		current_activity = -1;
-		printf("OK\r\n");
-	}
-	else if(strcmp(cmdArgs.params[1], "disable") == 0)
-	{
-		enablePPM = false;
-		printf("OK\r\n");
-	}
-	else if(strcmp(cmdArgs.params[1], "enable") == 0)
-	{
-		enablePPM = true;
-		printf("OK\r\n");
-	}
-	else if(strcmp(cmdArgs.params[1], "help") == 0) 
     {
-		printf("ppm show\r\n");
-		printf("ppm stop\r\n");
-		printf("ppm disable\r\n");
-		printf("ppm enable\r\n");
+        current_activity = 2;
+        printf("OK\r\n");
     }
-	else
-	{
-		printf("Syntax Error\r\n");		
-	}
+    else if(strcmp(cmdArgs.params[1], "stop") == 0)
+    {
+        current_activity = -1;
+        printf("OK\r\n");
+    }
+    else if(strcmp(cmdArgs.params[1], "disable") == 0)
+    {
+        enablePPM = false;
+        printf("OK\r\n");
+    }
+    else if(strcmp(cmdArgs.params[1], "enable") == 0)
+    {
+        enablePPM = true;
+        printf("OK\r\n");
+    }
+    else if(strcmp(cmdArgs.params[1], "help") == 0) 
+    {
+        printf("ppm show\r\n");
+        printf("ppm stop\r\n");
+        printf("ppm disable\r\n");
+        printf("ppm enable\r\n");
+    }
+    else
+    {
+        printf("Syntax Error\r\n");        
+    }
 
 }
 
@@ -439,7 +440,7 @@ void updateRobot()
 
 void parseHello(CommandArgs cmdArgs)
 {
-	initServoDriver();
+    initServoDriver();
     printf("Welcome\r\n");
 }
 
@@ -512,14 +513,14 @@ void parseChMap(CommandArgs cmdArgs)
         printf("chMap enable\r\n");
         printf("chMap disable\r\n");
         printf("\r\n");
-		printf("ChMapType:\r\n");
-		printf("1 - Direct\r\n");
-		printf("2 - Tank Mix\r\n");
-		printf("3 - IK Simple\r\n");
+        printf("ChMapType:\r\n");
+        printf("1 - Direct\r\n");
+        printf("2 - Tank Mix\r\n");
+        printf("3 - IK Simple\r\n");
         printf("\r\n");
-		printf("positionning:\r\n");
-		printf("1 - Absolute\r\n");
-		printf("2 - Relative	\r\n");	
+        printf("positionning:\r\n");
+        printf("1 - Absolute\r\n");
+        printf("2 - Relative    \r\n");    
     }
     else if(strcmp(cmdArgs.params[1], "dump") == 0)
     {
@@ -527,7 +528,7 @@ void parseChMap(CommandArgs cmdArgs)
     }
     else if(strcmp(cmdArgs.params[1], "dumpData") == 0)
     {       
-        dumpModeChMapData(modeIndex);		
+        dumpModeChMapData(modeIndex);        
     }
     else if(strcmp(cmdArgs.params[1], "setParams") == 0)
     {
@@ -542,15 +543,15 @@ void parseChMap(CommandArgs cmdArgs)
         saveChannelMappingList();
         printf("OK\r\n");
     }
-	else if(strcmp(cmdArgs.params[1], "enable") == 0)
-	{
-		enableMapping = true;
-		printf("OK\r\n");
-	}
-	else if(strcmp(cmdArgs.params[1], "disable") == 0)
-	{
-		enableMapping = false;
-        printf("OK\r\n");	}
+    else if(strcmp(cmdArgs.params[1], "enable") == 0)
+    {
+        enableMapping = true;
+        printf("OK\r\n");
+    }
+    else if(strcmp(cmdArgs.params[1], "disable") == 0)
+    {
+        enableMapping = false;
+        printf("OK\r\n");    }
     else
     {
         printf("Syntax Error\r\n");
@@ -559,20 +560,35 @@ void parseChMap(CommandArgs cmdArgs)
 
 void checkChangeMode()  
 {
+    vector<ChannelMapping*> *nextChMapList = NULL;
     if(changeModeChIndex == -1)
-	{
-		currentChMapList = &modeChMapList[0].chMapList;
+    {
+        currentChMapList = &modeChMapList[0].chMapList;
         return;
-	}
+    }
     
     float chModeData = ppm->GetData(changeModeChIndex);
     for(int i = 0; i < MAX_MODE; i++)
     {
-         if(chModeData >= modeChMapList[i].min && chModeData <= modeChMapList[i].max)
-         {
-             currentChMapList = &modeChMapList[i].chMapList;
-             break;
-         }
+        
+        if(chModeData >= modeChMapList[i].min && chModeData <= modeChMapList[i].max)
+        {
+            nextChMapList = &modeChMapList[i].chMapList;
+            if(currentChMapList != nextChMapList)
+            {
+                ChangeModeSecurityCounter++;
+            }
+            else
+            {
+                ChangeModeSecurityCounter = 0;
+            }
+            
+            if(ChangeModeSecurityCounter > 50)
+            {
+                currentChMapList = nextChMapList;
+            }
+            break;
+        }
     }
 }
 
@@ -612,21 +628,32 @@ void parseChMode(CommandArgs cmdArgs)
 // input <chIndex> <value>
 void parseInput(CommandArgs cmdArgs)
 {
-	int channel = atoi(cmdArgs.params[1]);
-	float value = atof(cmdArgs.params[2]);
-	if(channel > MAX_INPUT_CHANNELS-1)
-	{
-		printf("Error: channel too big\r\n");
-		return;
-	}
-	inputValues[channel] = value;
+    int channel = atoi(cmdArgs.params[1]);
+    float value = atof(cmdArgs.params[2]);
+    if(channel > MAX_INPUT_CHANNELS-1)
+    {
+        printf("Error: channel too big\r\n");
+        return;
+    }
+    inputValues[channel] = value;
+    printf("OK\r\n");
 }
 
 void updateInputValues()
 {
-	memcpy(inputValues, ppm->GetChannelDataAddr(), sizeof(float) * MAX_INPUT_CHANNELS);
+    memcpy(inputValues, ppm->GetChannelDataAddr(), sizeof(float) * MAX_INPUT_CHANNELS);
 }
 
+void parseDumpAll(CommandArgs cmdArgs)
+{
+    int modeCount = MAX_MODE;
+    for(int modeIndex = 0; modeIndex < modeCount; modeIndex++)
+    {
+        dumpModeChMapData(modeIndex);
+    }
+    dumpServoCalibrate();
+    dumpAllReverse();    
+}
 
 int main()
 {
@@ -642,17 +669,18 @@ int main()
     commands.add("chMap",parseChMap);
     commands.add("chMode",parseChMode);
     commands.add("input",parseInput);
-	
-	pc.baud (115200);
+    commands.add("dumpAll",parseDumpAll);
+    
+    pc.baud (115200);
     pc.attach(&rxCallback, Serial::RxIrq);
 
-	printf("Welcome\r\n");
+    printf("Welcome\r\n");
     
     ppm = new PPM(PPM_INPUT_PIN, 0, 1, 1000, 2000, MAX_INPUT_CHANNELS, 3);
-	inputValues = (float*)malloc(sizeof(float) * MAX_INPUT_CHANNELS);
-	for(int i = 0; i < MAX_INPUT_CHANNELS; i++)
-		inputValues[i] =  0.5;
-	
+    inputValues = (float*)malloc(sizeof(float) * MAX_INPUT_CHANNELS);
+    for(int i = 0; i < MAX_INPUT_CHANNELS; i++)
+        inputValues[i] =  0.5;
+    
     currentChMapList = NULL;
 
     initEEPROM();
@@ -679,10 +707,10 @@ int main()
             commandReady = 0;
         } 
         if(enablePPM)
-		{
-			ppm->UpdateChannelData();
-			updateInputValues();
-		}
+        {
+            ppm->UpdateChannelData();
+            updateInputValues();
+        }
         checkChangeMode();
         switch(current_activity)
         {
